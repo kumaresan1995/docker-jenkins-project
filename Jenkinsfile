@@ -11,7 +11,10 @@ pipeline {
 
         stage('Check Docker') {
             steps {
+                bat 'whoami'
+                bat 'echo %PATH%'
                 bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" --version'
+                bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" info'
             }
         }
 
