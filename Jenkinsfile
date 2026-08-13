@@ -2,30 +2,29 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone') {
+
+        stage('Checkout') {
             steps {
-                echo 'Cloning source code...'
+                checkout scm
             }
         }
 
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
-                sh 'docker build -t myapp:latest .'
+                bat 'docker build -t myapp:latest .'
             }
         }
 
         stage('Deploy') {
             steps {
-                sh '''
-                docker rm -f myapp || true
-                docker run -d --name myapp -p 8081:80 myapp:latest
-                '''
+                bat 'docker rm -f myapp || exit 0'
+                bat 'docker run -d --name myapp -p 8081:80 myapp:latest'
             }
         }
 
         stage('Verify') {
             steps {
-                sh 'docker ps'
+                bat 'docker ps'
             }
         }
     }
