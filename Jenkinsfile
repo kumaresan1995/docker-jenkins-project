@@ -9,31 +9,37 @@ pipeline {
             }
         }
 
+        stage('Check Windows') {
+            steps {
+                powershell 'Write-Host "Jenkins PowerShell is working"'
+                powershell '$env:USERNAME'
+                powershell '$env:PATH'
+            }
+        }
+
         stage('Check Docker') {
             steps {
-                bat 'whoami'
-                bat 'echo %PATH%'
-                bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" --version'
-                bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" info'
+                powershell '& "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" --version'
+                powershell '& "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" info'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" build -t myapp:latest .'
+                powershell '& "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" build -t myapp:latest .'
             }
         }
 
         stage('Deploy') {
             steps {
-                bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" rm -f myapp || exit 0'
-                bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" run -d --name myapp -p 8081:80 myapp:latest'
+                powershell '& "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" rm -f myapp'
+                powershell '& "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" run -d --name myapp -p 8081:80 myapp:latest'
             }
         }
 
         stage('Verify') {
             steps {
-                bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" ps'
+                powershell '& "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" ps'
             }
         }
     }
