@@ -9,11 +9,15 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                powershell 'docker build -t myapp:latest .'
-            }
-        }
+stage('Build Docker Image') {
+    steps {
+        powershell '''
+            $IMAGE_TAG = "$env:BUILD_NUMBER"
+            docker build -t myapp:$IMAGE_TAG .
+            docker tag myapp:$IMAGE_TAG myapp:latest
+        '''
+    }
+}
 
         stage('Test Docker Image') {
             steps {
