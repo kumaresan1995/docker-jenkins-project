@@ -9,37 +9,24 @@ pipeline {
             }
         }
 
-        stage('Check Windows') {
-            steps {
-                powershell 'Write-Host "Jenkins PowerShell is working"'
-                powershell '$env:USERNAME'
-                powershell '$env:PATH'
-            }
-        }
-
-        stage('Check Docker') {
-            steps {
-                powershell '& "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" --version'
-                powershell '& "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" info'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
-                powershell '& "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" build -t myapp:latest .'
+                powershell 'docker build -t myapp:latest .'
             }
         }
 
         stage('Deploy') {
             steps {
-                powershell '& "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" rm -f myapp'
-                powershell '& "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" run -d --name myapp -p 8081:80 myapp:latest'
+                powershell '''
+                    docker rm -f myapp 2>$null
+                    docker run -d --name myapp -p 8081:80 myapp:latest
+                '''
             }
         }
 
         stage('Verify') {
             steps {
-                powershell '& "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" ps'
+                powershell 'docker ps'
             }
         }
     }
